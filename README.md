@@ -17,6 +17,50 @@
 
 ---
 
+## 🎬 功能预览
+
+### 四种天气模式
+
+<table>
+<tr>
+<td width="50%">
+<img src="./screenshots/01-starry-night-default.png" alt="晴空模式"><br>
+<p align="center"><b>🌙 晴空模式</b><br>星空闪烁 + 流星效果</p>
+</td>
+<td width="50%">
+<img src="./screenshots/02-rainy-night.png" alt="雨夜模式"><br>
+<p align="center"><b>🌧️ 雨夜模式</b><br>倾斜雨丝 + 避雨交互</p>
+</td>
+</tr>
+<tr>
+<td width="50%">
+<img src="./screenshots/03-snow-mode.png" alt="飞雪模式"><br>
+<p align="center"><b>❄️ 飞雪模式</b><br>雪花飘荡 + 空气动力学</p>
+</td>
+<td width="50%">
+<img src="./screenshots/04-wind-mode.png" alt="狂风模式"><br>
+<p align="center"><b>💨 狂风模式</b><br>风洞湍流 + 高速粒子</p>
+</td>
+</tr>
+</table>
+
+### 交互功能演示
+
+<table>
+<tr>
+<td width="50%">
+<img src="./screenshots/05-poem-switch.png" alt="诗词切换"><br>
+<p align="center"><b>📜 诗词切换</b><br>12首古典诗词自由切换</p>
+</td>
+<td width="50%">
+<img src="./screenshots/06-location-switch.png" alt="地点切换"><br>
+<p align="center"><b>🗺️ 地点切换</b><br>5个中国古都循环切换</p>
+</td>
+</tr>
+</table>
+
+---
+
 ## 🤖 AI 生成说明
 
 > **本项目是 AI 原生应用的典范案例**
