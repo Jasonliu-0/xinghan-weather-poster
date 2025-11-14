@@ -50,53 +50,89 @@
 
         .glass-dock {
 
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(15, 23, 42, 0.4);
 
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px) saturate(180%);
 
-            -webkit-backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
 
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 
+                        inset 0 1px 0 rgba(255,255,255,0.1);
 
         }
 
-        .weather-btn { position: relative; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); opacity: 0.6; }
+        .weather-btn { 
+            position: relative; 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            opacity: 0.5;
+            border-radius: 14px;
+        }
 
-        .weather-btn:hover { opacity: 1; background: rgba(255,255,255,0.05); }
+        .weather-btn:hover { 
+            opacity: 0.8; 
+            background: rgba(255,255,255,0.08); 
+            transform: translateY(-2px);
+        }
 
         .weather-btn.active {
-
             opacity: 1;
-
-            background: rgba(255, 255, 255, 0.15);
-
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
-
-            transform: scale(1.1);
-
-            border-radius: 16px;
-
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .weather-btn:active {
+            transform: scale(0.95);
         }
 
-        /* 激活状态下的小光点 */
-
-        .weather-btn.active::after {
-
-            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
-
-            width: 4px; height: 4px; background: #fff; border-radius: 50%;
-
-            box-shadow: 0 0 10px #fff;
-
+        /* 桌面端优化 */
+        @media (min-width: 769px) {
+            .weather-btn.active {
+                transform: scale(1.08);
+            }
+            
+            .weather-btn:hover {
+                transform: translateY(-3px);
+            }
+            
+            .weather-btn.active::after {
+                content: ''; 
+                position: absolute; 
+                bottom: -10px; 
+                left: 50%; 
+                transform: translateX(-50%);
+                width: 5px; 
+                height: 5px; 
+                background: #fff; 
+                border-radius: 50%;
+                box-shadow: 0 0 12px rgba(255,255,255,0.8);
+                opacity: 0.9;
+            }
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .weather-btn:hover {
+                transform: none;
+            }
         }
 
         .vertical-text { writing-mode: vertical-rl; text-orientation: upright; letter-spacing: 0.5em; }
 
         @media (max-width: 768px) { 
 
-            .vertical-text { writing-mode: horizontal-tb; letter-spacing: 0.2em; } 
+            .vertical-text { 
+                writing-mode: horizontal-tb; 
+                letter-spacing: 0.15em;
+                line-height: 1.8;
+            }
+            
+            /* 移动端优化 */
+            body {
+                overflow-x: hidden;
+            }
 
         }
 
@@ -130,25 +166,27 @@
 
         <header class="flex justify-between items-start w-full fade-enter" style="animation-delay: 0.1s;">
 
-            <div class="pointer-events-auto cursor-pointer group">
+            <div class="pointer-events-auto cursor-pointer group" onclick="changeLocation()">
 
-                <div class="flex items-center gap-2 opacity-40 text-xs tracking-[0.4em] uppercase mb-2 group-hover:text-amber-200 transition-colors">
+                <div class="flex items-center gap-1.5 md:gap-2 opacity-40 text-[10px] md:text-xs tracking-[0.3em] md:tracking-[0.4em] uppercase mb-1 md:mb-2 group-hover:text-amber-200 transition-colors">
 
-                    <i data-lucide="map-pin" class="w-3 h-3"></i>
+                    <i data-lucide="map-pin" class="w-2.5 h-2.5 md:w-3 md:h-3"></i>
 
-                    <span>CHANG'AN</span>
+                    <span id="location-en">CHANG'AN</span>
+
+                    <i data-lucide="refresh-cw" class="w-2.5 h-2.5 md:w-3 md:h-3 opacity-0 group-hover:opacity-60 transition-opacity"></i>
 
                 </div>
 
-                <h1 class="text-5xl md:text-7xl font-calligraphy tracking-widest text-white drop-shadow-2xl group-hover:scale-105 transition-transform origin-left">长安</h1>
+                <h1 id="location-zh" class="text-4xl md:text-7xl font-calligraphy tracking-widest text-white drop-shadow-2xl group-hover:scale-105 transition-transform origin-left">长安</h1>
 
             </div>
 
             <div class="text-right">
 
-                <div class="opacity-40 text-xs tracking-[0.3em] mb-1">LUNAR</div>
+                <div class="opacity-40 text-[10px] md:text-xs tracking-[0.25em] md:tracking-[0.3em] mb-1">LUNAR</div>
 
-                <div class="text-xl md:text-2xl font-serif font-light tracking-widest text-white/90">上元 · 夜</div>
+                <div id="lunar-date" class="text-lg md:text-2xl font-serif font-light tracking-wider md:tracking-widest text-white/90">上元 · 夜</div>
 
             </div>
 
@@ -156,47 +194,67 @@
 
         <!-- Center Poem -->
 
-        <section class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:translate-x-0 md:left-auto md:right-24 md:top-1/2 w-full md:w-auto text-center md:text-left pointer-events-none z-0">
+        <section class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:translate-x-0 md:left-auto md:right-24 md:top-1/2 w-full md:w-auto text-center md:text-left pointer-events-none z-0 px-4 md:px-0">
 
-            <div id="poem-container" class="fade-enter flex flex-col md:flex-row-reverse gap-6 md:gap-16 items-center justify-center transition-all duration-1000 ease-out poem-mask" style="animation-delay: 0.2s;">
+            <div class="relative flex items-center justify-center md:justify-start gap-4">
 
-                <h2 class="vertical-text text-3xl md:text-5xl font-serif font-bold text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">
+                <!-- 诗词切换按钮 -->
+                <button onclick="changePoemIndex(-1)" class="pointer-events-auto opacity-40 hover:opacity-100 transition-opacity duration-300 text-white/60 hover:text-white" title="上一首">
+                    <i data-lucide="chevron-left" class="w-6 h-6 md:w-8 md:h-8"></i>
+                </button>
 
-                    醉后不知天在水
+                <div id="poem-container" class="fade-enter flex flex-col md:flex-row-reverse gap-3 md:gap-16 items-center justify-center transition-all duration-1000 ease-out poem-mask" style="animation-delay: 0.2s;">
 
-                </h2>
+                    <h2 class="vertical-text text-2xl md:text-5xl font-serif font-bold text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">
 
-                <h2 class="vertical-text text-3xl md:text-5xl font-serif font-bold text-white/70 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">
+                        醉后不知天在水
 
-                    满船清梦压星河
+                    </h2>
 
-                </h2>
+                    <h2 class="vertical-text text-2xl md:text-5xl font-serif font-bold text-white/70 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">
 
+                        满船清梦压星河
+
+                    </h2>
+
+                </div>
+
+                <button onclick="changePoemIndex(1)" class="pointer-events-auto opacity-40 hover:opacity-100 transition-opacity duration-300 text-white/60 hover:text-white" title="下一首">
+                    <i data-lucide="chevron-right" class="w-6 h-6 md:w-8 md:h-8"></i>
+                </button>
+
+            </div>
+
+            <!-- 诗词指示器 -->
+            <div id="poem-indicator" class="flex justify-center gap-2 mt-4 md:mt-6 pointer-events-none">
+                <span class="w-2 h-2 rounded-full bg-white/50"></span>
+                <span class="w-2 h-2 rounded-full bg-white/20"></span>
+                <span class="w-2 h-2 rounded-full bg-white/20"></span>
             </div>
 
         </section>
 
         <!-- Bottom Weather Info -->
 
-        <section class="absolute bottom-36 md:bottom-16 left-6 md:left-16 pointer-events-auto fade-enter" style="animation-delay: 0.3s;">
+        <section class="absolute bottom-24 md:bottom-16 left-6 md:left-16 pointer-events-auto fade-enter" style="animation-delay: 0.3s;">
 
-            <div class="flex items-end gap-4 group">
+            <div class="flex items-end gap-3 md:gap-4 group">
 
-                <span id="temp-val" class="text-7xl md:text-9xl font-thin font-serif leading-none -ml-1 tracking-tighter text-white transition-all duration-700">18</span>
+                <span id="temp-val" class="text-6xl md:text-9xl font-thin font-serif leading-none -ml-1 tracking-tighter text-white transition-all duration-700">18</span>
 
-                <div class="flex flex-col pb-2 md:pb-6 gap-2 opacity-80">
+                <div class="flex flex-col pb-1 md:pb-6 gap-1 md:gap-2 opacity-80">
 
-                    <i id="weather-icon" data-lucide="moon" class="w-8 h-8 md:w-10 md:h-10 text-amber-100"></i>
+                    <i id="weather-icon" data-lucide="moon" class="w-6 h-6 md:w-10 md:h-10 text-amber-100"></i>
 
                 </div>
 
             </div>
 
-            <div class="h-px w-16 bg-white/30 my-4"></div>
+            <div class="h-px w-12 md:w-16 bg-white/30 my-3 md:my-4"></div>
 
-            <div class="flex flex-col gap-1 overflow-hidden h-20">
+            <div class="flex flex-col gap-1 overflow-hidden h-16 md:h-20">
 
-                <span id="weather-main" class="text-2xl md:text-3xl font-calligraphy tracking-widest text-white transform transition-transform duration-700">星河欲转</span>
+                <span id="weather-main" class="text-xl md:text-3xl font-calligraphy tracking-widest text-white transform transition-transform duration-700">星河欲转</span>
 
                 <span id="weather-sub" class="text-xs text-white/40 tracking-[0.2em] uppercase font-serif transform transition-transform duration-700 delay-100">Starry Night</span>
 
@@ -206,31 +264,31 @@
 
         <!-- Dock -->
 
-        <nav class="absolute bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-auto fade-enter w-full max-w-[320px] md:max-w-sm" style="animation-delay: 0.4s;">
+        <nav class="fixed bottom-6 md:bottom-8 left-0 right-0 pointer-events-none fade-enter flex justify-center" style="animation-delay: 0.4s;">
 
-            <div class="glass-dock rounded-full p-2 flex justify-between items-center w-full px-6">
+            <div class="glass-dock rounded-full py-3 px-5 md:py-2.5 md:px-4 flex items-center gap-5 md:gap-8 pointer-events-auto">
 
-                <button onclick="setMode(0)" class="weather-btn active w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-amber-100" title="晴空">
+                <button onclick="setMode(0)" class="weather-btn active w-11 h-11 md:w-14 md:h-14 flex items-center justify-center text-amber-100 flex-shrink-0" title="晴空">
 
-                    <i data-lucide="moon" class="w-5 h-5"></i>
-
-                </button>
-
-                <button onclick="setMode(1)" class="weather-btn w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-cyan-100" title="雨夜">
-
-                    <i data-lucide="cloud-rain" class="w-5 h-5"></i>
+                    <i data-lucide="moon" class="w-5 h-5 md:w-6 md:h-6"></i>
 
                 </button>
 
-                <button onclick="setMode(2)" class="weather-btn w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-white" title="飞雪">
+                <button onclick="setMode(1)" class="weather-btn w-11 h-11 md:w-14 md:h-14 flex items-center justify-center text-cyan-100 flex-shrink-0" title="雨夜">
 
-                    <i data-lucide="snowflake" class="w-5 h-5"></i>
+                    <i data-lucide="cloud-rain" class="w-5 h-5 md:w-6 md:h-6"></i>
 
                 </button>
 
-                <button onclick="setMode(3)" class="weather-btn w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-purple-100" title="劲风">
+                <button onclick="setMode(2)" class="weather-btn w-11 h-11 md:w-14 md:h-14 flex items-center justify-center text-white flex-shrink-0" title="飞雪">
 
-                    <i data-lucide="wind" class="w-5 h-5"></i>
+                    <i data-lucide="snowflake" class="w-5 h-5 md:w-6 md:h-6"></i>
+
+                </button>
+
+                <button onclick="setMode(3)" class="weather-btn w-11 h-11 md:w-14 md:h-14 flex items-center justify-center text-purple-100 flex-shrink-0" title="劲风">
+
+                    <i data-lucide="wind" class="w-5 h-5 md:w-6 md:h-6"></i>
 
                 </button>
 
@@ -584,6 +642,48 @@
 
         let meteors = [];
 
+        // ========== 新增：诗词和地点数据 ==========
+        let currentPoemIndex = 0; // 当前诗词索引
+        let currentLocationIndex = 0; // 当前地点索引
+        let currentWeatherMode = 0; // 当前天气模式
+
+        // 城市数据
+        const locations = [
+            { zh: '长安', en: 'CHANG\'AN', lunar: '上元 · 夜', temp: 18 },
+            { zh: '洛阳', en: 'LUOYANG', lunar: '中秋 · 宵', temp: 16 },
+            { zh: '金陵', en: 'JINLING', lunar: '寒食 · 暮', temp: 14 },
+            { zh: '姑苏', en: 'GUSU', lunar: '清明 · 春', temp: 19 },
+            { zh: '临安', en: 'LIN\'AN', lunar: '重阳 · 秋', temp: 17 }
+        ];
+
+        // 天气诗词数据（每种天气3首）
+        const weatherPoems = [
+            // 晴空
+            [
+                { p1: '醉后不知天在水', p2: '满船清梦压星河', m: '星河欲转', s: 'Starry Night' },
+                { p1: '天阶夜色凉如水', p2: '坐看牵牛织女星', m: '银汉迢迢', s: 'Milky Way' },
+                { p1: '迢迢牵牛星', p2: '皎皎河汉女', m: '河汉清浅', s: 'Stars Above' }
+            ],
+            // 雨夜
+            [
+                { p1: '君问归期未有期', p2: '巴山夜雨涨秋池', m: '巴山夜雨', s: 'Heavy Rain' },
+                { p1: '夜阑卧听风吹雨', p2: '铁马冰河入梦来', m: '夜雨潇潇', s: 'Night Rain' },
+                { p1: '春雨断桥人不度', p2: '小舟撑出柳阴来', m: '细雨绵绵', s: 'Spring Rain' }
+            ],
+            // 飞雪
+            [
+                { p1: '柴门闻犬吠', p2: '风雪夜归人', m: '千山暮雪', s: 'Heavy Snow' },
+                { p1: '千里黄云白日曛', p2: '北风吹雁雪纷纷', m: '雪霁天晴', s: 'Snow Day' },
+                { p1: '窗含西岭千秋雪', p2: '门泊东吴万里船', m: '千秋雪', s: 'Winter Snow' }
+            ],
+            // 狂风
+            [
+                { p1: '大风起兮云飞扬', p2: '威加海内兮归故乡', m: '大风起兮', s: 'Gale Wind' },
+                { p1: '长风破浪会有时', p2: '直挂云帆济沧海', m: '长风破浪', s: 'Strong Wind' },
+                { p1: '八月秋高风怒号', p2: '卷我屋上三重茅', m: '秋风怒号', s: 'Autumn Gale' }
+            ]
+        ];
+
         
 
         // 初始化
@@ -922,7 +1022,100 @@
 
         let targetRainMode = false;
 
+        // ========== 新增：诗词切换函数 ==========
+        window.changePoemIndex = function(direction) {
+            const poems = weatherPoems[currentWeatherMode];
+            currentPoemIndex = (currentPoemIndex + direction + poems.length) % poems.length;
+            updatePoemUI();
+            updatePoemIndicator();
+        };
+
+        // ========== 新增：地点切换函数 ==========
+        window.changeLocation = function() {
+            currentLocationIndex = (currentLocationIndex + 1) % locations.length;
+            updateLocationUI();
+        };
+
+        // ========== 新增：更新诗词UI ==========
+        function updatePoemUI() {
+            const poem = weatherPoems[currentWeatherMode][currentPoemIndex];
+            const pContainer = document.getElementById('poem-container');
+            const main = document.getElementById('weather-main');
+            const sub = document.getElementById('weather-sub');
+
+            // 淡出
+            pContainer.style.opacity = 0;
+            pContainer.style.filter = 'blur(10px)';
+            main.style.opacity = 0;
+            sub.style.opacity = 0;
+
+            setTimeout(() => {
+                // 更新内容
+                pContainer.innerHTML = `
+                    <h2 class="vertical-text text-2xl md:text-5xl font-serif font-bold text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">${poem.p1}</h2>
+                    <h2 class="vertical-text text-2xl md:text-5xl font-serif font-bold text-white/70 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">${poem.p2}</h2>
+                `;
+                main.innerText = poem.m;
+                sub.innerText = poem.s;
+
+                // 淡入
+                pContainer.style.opacity = 1;
+                pContainer.style.filter = 'blur(0px)';
+                main.style.opacity = 1;
+                sub.style.opacity = 1;
+            }, 300);
+        }
+
+        // ========== 新增：更新诗词指示器 ==========
+        function updatePoemIndicator() {
+            const indicator = document.getElementById('poem-indicator');
+            const poems = weatherPoems[currentWeatherMode];
+            indicator.innerHTML = poems.map((_, i) => 
+                `<span class="w-2 h-2 rounded-full transition-all duration-300 ${i === currentPoemIndex ? 'bg-white/70 w-6' : 'bg-white/20'}"></span>`
+            ).join('');
+        }
+
+        // ========== 新增：更新地点UI ==========
+        function updateLocationUI() {
+            const location = locations[currentLocationIndex];
+            const locationZh = document.getElementById('location-zh');
+            const locationEn = document.getElementById('location-en');
+            const lunarDate = document.getElementById('lunar-date');
+            const temp = document.getElementById('temp-val');
+
+            // 淡出
+            locationZh.style.opacity = 0;
+            locationEn.style.opacity = 0;
+            lunarDate.style.opacity = 0;
+            temp.style.opacity = 0;
+
+            setTimeout(() => {
+                locationZh.innerText = location.zh;
+                locationEn.innerText = location.en;
+                lunarDate.innerText = location.lunar;
+                
+                // 根据地点调整温度
+                const weatherData = [
+                    { temp: location.temp, icon: 'moon' },
+                    { temp: location.temp - 3, icon: 'cloud-rain' },
+                    { temp: location.temp - 23, icon: 'snowflake' },
+                    { temp: location.temp - 9, icon: 'wind' }
+                ];
+                temp.innerText = weatherData[currentWeatherMode].temp;
+
+                // 淡入
+                locationZh.style.opacity = 1;
+                locationEn.style.opacity = 1;
+                lunarDate.style.opacity = 1;
+                temp.style.opacity = 1;
+
+                lucide.createIcons();
+            }, 300);
+        }
+
         window.setMode = function(mode) {
+            currentWeatherMode = mode;
+            currentPoemIndex = 0; // 切换天气时重置诗词索引
 
             // 1. 视觉模式切换 (Lerp Transition)
 
@@ -957,6 +1150,7 @@
             // 3. UI 更新
 
             updateUI(mode);
+            updatePoemIndicator(); // 更新诗词指示器
 
         };
 
@@ -968,53 +1162,25 @@
 
             });
 
-            const data = [
-
-                {
-
-                    bg: 'radial-gradient(circle at 50% 60%, #1e293b 0%, #000000 80%)',
-
-                    t: '18', m: '星河欲转', s: 'Starry Night', i: 'moon',
-
-                    p1: '醉后不知天在水', p2: '满船清梦压星河'
-
-                },
-
-                {
-
-                    bg: 'linear-gradient(to bottom, #0f172a, #020617)',
-
-                    t: '15', m: '巴山夜雨', s: 'Heavy Rain', i: 'cloud-rain',
-
-                    p1: '君问归期未有期', p2: '巴山夜雨涨秋池'
-
-                },
-
-                {
-
-                    bg: 'radial-gradient(circle at 50% 40%, #334155 0%, #0f172a 100%)',
-
-                    t: '-5', m: '千山暮雪', s: 'Heavy Snow', i: 'snowflake',
-
-                    p1: '柴门闻犬吠', p2: '风雪夜归人'
-
-                },
-
-                {
-
-                    bg: 'linear-gradient(120deg, #1e1b4b, #000000)',
-
-                    t: '09', m: '大风起兮', s: 'Gale / Dust', i: 'wind',
-
-                    p1: '大风起兮云飞扬', p2: '威加海内兮归故乡'
-
-                }
-
+            // 背景数据
+            const backgrounds = [
+                'radial-gradient(circle at 50% 60%, #1e293b 0%, #000000 80%)',
+                'linear-gradient(to bottom, #0f172a, #020617)',
+                'radial-gradient(circle at 50% 40%, #334155 0%, #0f172a 100%)',
+                'linear-gradient(120deg, #1e1b4b, #000000)'
             ];
 
-            
+            // 天气图标
+            const icons = ['moon', 'cloud-rain', 'snowflake', 'wind'];
 
-            const d = data[mode];
+            // 当前诗词数据
+            const poem = weatherPoems[mode][currentPoemIndex];
+            
+            // 当前地点数据
+            const location = locations[currentLocationIndex];
+            
+            // 温度数据（根据地点和天气）
+            const temps = [location.temp, location.temp - 3, location.temp - 23, location.temp - 9];
 
             const container = document.getElementById('canvas-container');
 
@@ -1030,7 +1196,7 @@
 
             // 背景过渡
 
-            container.style.background = d.bg;
+            container.style.background = backgrounds[mode];
 
             // 文字淡出
 
@@ -1044,21 +1210,21 @@
 
             setTimeout(() => {
 
-                temp.innerText = d.t;
+                temp.innerText = temps[mode];
 
-                main.innerText = d.m;
+                main.innerText = poem.m;
 
-                sub.innerText = d.s;
+                sub.innerText = poem.s;
 
-                icon.setAttribute('data-lucide', d.i);
+                icon.setAttribute('data-lucide', icons[mode]);
 
                 lucide.createIcons();
 
                 pContainer.innerHTML = `
 
-                    <h2 class="vertical-text text-3xl md:text-5xl font-serif font-bold text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">${d.p1}</h2>
+                    <h2 class="vertical-text text-2xl md:text-5xl font-serif font-bold text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">${poem.p1}</h2>
 
-                    <h2 class="vertical-text text-3xl md:text-5xl font-serif font-bold text-white/70 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">${d.p2}</h2>
+                    <h2 class="vertical-text text-2xl md:text-5xl font-serif font-bold text-white/70 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] poem-line">${poem.p2}</h2>
 
                 `;
 
@@ -1077,6 +1243,11 @@
         }
 
         init();
+        
+        // 初始化诗词指示器
+        setTimeout(() => {
+            updatePoemIndicator();
+        }, 100);
 
     </script>
 
