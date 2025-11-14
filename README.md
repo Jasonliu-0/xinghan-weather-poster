@@ -11,7 +11,7 @@
 
 **✨ 本项目完全由 Google Gemini 3.0 Pro 生成 ✨**
 
-[在线演示](#) | [技术文档](./完美复刻提示词.md)
+[在线演示](https://xinghan.our-ai.me/) | [技术文档](./完美复刻提示词.md) | [GitHub 仓库](https://github.com/Jasonliu-0/xinghan-weather-poster)
 
 </div>
 
